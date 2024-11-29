@@ -1,0 +1,92 @@
+<SESSION name="FRENCH_MNN_20241126">
+<INFO>
+	<PREFIX name = "MNN" />
+   <LOG name="FRENCH_MNN_20241126" />
+   <TIMINGS name="FRENCH_MNN_20241126" />
+   <PARTICIPANT id="MNN" sex="F" age="24" />
+   <ACQHW>
+       <MODULE name="acq_AUDIO">
+           <AUDIO chan_num="1" srate="44100" />
+           <DISPLAY color="211 211 211" />
+       </MODULE>
+</ACQHW>
+<CSS>
+body {
+       background-color: 211,211,211;
+}
+#basic {
+    margin-top:100px;
+    margin-left: 50px;
+    margin-right: 50px;
+    font-family: Arial;
+    font-size: 200px;
+    font-weight: bold;
+    text-align: center;
+    color: 000000;
+}
+</CSS>
+</INFO>
+<DEFS>
+    <DEFBLOCK name="MAIN" code="M" nreps="1" rand="1">
+        <TEMPLATE>
+            <STIMULUS>
+                <HTML><![CDATA[<div id="basic">@1</div>]]></HTML>
+            </STIMULUS>
+        </TEMPLATE>
+        <TOKEN a1="Haha">Haha</TOKEN>
+        <TOKEN a1="haka">haka</TOKEN>
+        <TOKEN a1="kaha">kaha</TOKEN>
+        <TOKEN a1="Haka">Haka</TOKEN>
+        <TOKEN a1="hala">hala</TOKEN>
+    </DEFBLOCK>
+</DEFS>
+<ORDER>
+       <PAUSE prompt="Begin">
+            <![CDATA[<div id="basic">Ready to begin?</div>]]>
+       </PAUSE>
+
+    <PAUSE prompt="Block 1 Rep 1" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 1</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 2" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 2</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 3" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 3</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 4" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 4</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 5" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 5</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 6" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 6</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 7" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 7</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 8" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 8</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 9" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 9</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+    <PAUSE prompt="Block 1 Rep 10" dur="2">
+	<![CDATA[<div id="basic">Begin Block 1 Rep 10</div>]]>
+       </PAUSE>
+       <BLOCK name="MAIN" />
+       <PAUSE prompt="End">
+		<![CDATA[<div id="basic">All Done – Thanks!</div>]]>
+   	</PAUSE>
+</ORDER>
+</SESSION>

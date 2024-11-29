@@ -1,0 +1,29 @@
+
+
+============================================================
+  FRENCH_MNN_20241126 initiated 25NOV24 23:58:25
+------------------------------------------------------------
+    SESSION.............. FRENCH_MNN_20241126
+    PREFIX............... MNN
+    LOG.................. FRENCH_MNN_20241126.log
+    TIMINGS.............. FRENCH_MNN_20241126
+    PARTICIPANT
+      AGE................ 24
+      ID................. MNN
+      SEX................ F
+    ACQHW
+      NAME............... acq_AUDIO
+      PARAMS
+        NAME............. AUDIO
+        ARGS
+          CHAN_NUM....... 1
+          SRATE.......... 44100
+      PARAMS
+        NAME............. DISPLAY
+        ARGS
+          COLOR.......... [211 211 211]
+============================================================
+
+using default audio input (DeviceID = -1)
+Error using animatedline
+Invalid RGB triplet. Specify a three-element vector of values between 0 and 1.
