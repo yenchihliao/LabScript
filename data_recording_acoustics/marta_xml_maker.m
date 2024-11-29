@@ -28,11 +28,7 @@ while length(regexp(experiment_date{1},'^[0-9]{8}$')) ~= 1
 end
 experiment_date = experiment_date{1};
 
-speaker_sex = inputdlg("Enter participant's gender:");
-while length(regexp(speaker_sex{1},"^[MF]$")) ~=1
-    speaker_sex = inputdlg("Enter participant's gender:");
-end
-speaker_sex = speaker_sex{1};
+speaker_sex = questdlg('Select speaker sex:', 'Speaker Sex', 'M', 'F', 'F')
 
 speaker_age = inputdlg("Enter participant's age:");
 while length(regexp(speaker_age{1},"^[0-9]+$")) ~=1
