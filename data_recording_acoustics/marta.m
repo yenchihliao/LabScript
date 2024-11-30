@@ -182,7 +182,7 @@ end % BrowserChangedSize
 function EndTrial(~,~)
 
 % blank screen(s)
-set(state.BROWSER,'HTMLSource','<BODY bgcolor="black" />')
+set(state.BROWSER,'HTMLSource','<BODY bgcolor="darkgrey" />')
 
 % stop recording unless BLKREC recording in progress
 if state.RECORD, StopRecording; end
@@ -292,7 +292,7 @@ layout = [];	% use default layout
 audioParams=[];	% use info-specified audio params
 VOXthr = [];	% override stimulus threshold
 html = ['<HEAD><STYLE>#txt {text-align:center;margin-top:100px;font-style:italic;font-family:Arial;font-size:64;font-weight:bold;color:#000088}</STYLE>', ...
-		'</HEAD><BODY bgcolor="white"><div id="txt">Don''t w<FONT color="#C80000">o</FONT>rry, be h<FONT color="#00C800">a</FONT>ppy...</div></BODY>'];
+		'</HEAD><BODY bgcolor="darkgrey"><div id="txt">Don''t w<FONT color="#C80000">o</FONT>rry, be h<FONT color="#00C800">a</FONT>ppy...</div></BODY>'];
 
 record = ~isempty(info.ACQHW);		% recording requires a HW module
 

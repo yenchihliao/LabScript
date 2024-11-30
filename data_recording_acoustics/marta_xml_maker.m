@@ -6,7 +6,18 @@ use_images = false;
 ag501_address = "169.254.141.13";
 echowave_path = "C:\\Program Files\\Telemed\\Echo Wave II Application\\EchoWave II";
 
-font_size = 200;
+font_sizes = {'100','150','200','250'};
+[font_index,~] = listdlg(...
+                    'PromptString','Select font size', ...
+                    'SelectionMode','single',...
+                    'InitialValue', [3],... % 200 by default
+                    'ListString',font_sizes);
+% font_index: [2] % assuming user selected 150
+font_size = font_sizes(font_index);
+% font_size: {'150'}
+font_size = font_size{1};
+% font_size: '150'
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -28,7 +39,7 @@ while length(regexp(experiment_date{1},'^[0-9]{8}$')) ~= 1
 end
 experiment_date = experiment_date{1};
 
-speaker_sex = questdlg('Select speaker sex:', 'Speaker Sex', 'M', 'F', 'F')
+speaker_sex = questdlg('Select speaker sex:', 'Speaker Sex', 'M', 'F', 'M') % Male by default
 
 speaker_age = inputdlg("Enter participant's age:");
 while length(regexp(speaker_age{1},"^[0-9]+$")) ~=1
@@ -38,8 +49,10 @@ speaker_age = speaker_age{1};
 
 all_modules = {'AG501','Audio','Ultrasound'};
 [module_index,~] = listdlg('PromptString','Select modules.','ListString',all_modules);
+% module_index = [2, 3] % assume user selected Audio and US
 
 modules = all_modules(module_index);
+% modules = {'Audio','Ultrasound'}
 
 reps = inputdlg("Number of reps:");
 while length(regexp(reps{1},"^[0-9]+$")) ~=1
@@ -79,7 +92,9 @@ for i = 1:length(modules)
             ];
         case "Audio"
             
-            chan_answer = questdlg('Select channel number:', 'Channel Number', 'mono', 'stero', 'mono')
+            chan_answer = questdlg(...
+                            'Select channel number:', 'Channel Number',...
+                            'mono', 'stero', 'mono') % mono by default
             if chan_answer == 'mono'
                 chan = '1'
             else
@@ -88,7 +103,11 @@ for i = 1:length(modules)
 
 
             sampling_rates = {'8000','11025','12000','16000','22050','24000','32000','44100','48000'};
-            [srate_index,~] = listdlg('PromptString','Select sampling rate (in Hz).','SelectionMode','single','ListString',sampling_rates);
+            [srate_index,~] = listdlg(...
+                                'PromptString','Select sampling rate (in Hz).',...
+                                'SelectionMode','single',...
+                                'InitialValue', [8],... % sampling_rates{8} by default
+                                'ListString',sampling_rates);
             
             srate = sampling_rates(srate_index);
             srate = srate{1};
@@ -111,7 +130,7 @@ info_text = [info_text;...
     "</ACQHW>";...
     "<CSS>";...
     "body {";...
-    "       background-color: 211,211,211;";...
+    "       background-color: 128, 128, 128;";...
     "}";...
     "#basic {";...
     "    margin-top:100px;";...
@@ -174,7 +193,7 @@ for x = 1:reps
 end
 order_text = [order_text;...
 '       <PAUSE prompt="End">';...
-'		<![CDATA[<div id="basic">All Done – Thanks!</div>]]>';...
+'		<![CDATA[<div id="basic"></div>]]>';...
 '   	</PAUSE>';...
 '</ORDER>'];
 

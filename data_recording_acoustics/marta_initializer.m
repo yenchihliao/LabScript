@@ -6,8 +6,8 @@
 
 clear;
 
-parent_directory = uigetdir('',"Select working directory");
-cd(parent_directory);
+% parent_directory = uigetdir('pwd',"Select working directory");
+% cd(parent_directory);
 
 [fName,path] = uigetfile('*.xml',"Select XML file");
 
