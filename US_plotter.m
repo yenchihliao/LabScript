@@ -59,7 +59,9 @@ all_plot_types = {
     '2D plot (averaged)', ...
     '2D plot Animated (single trial)', ...
     'Compare Averages', ...
-    'Align EMA'};
+    'Align EMA', ...
+    'Diff'
+    };
 [plot_index,plot_tf] = listdlg('PromptString','Select plot types.','ListString',all_plot_types);
 
 plot_types = all_plot_types(plot_index);
@@ -67,15 +69,14 @@ plot_types = all_plot_types(plot_index);
 if any(ismember({'2D plot (single trial)' '2D plot (all trials)' '2D plot (averaged)' 'Compare Averages' 'Align EMA'},plot_types))
 
     t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):'));
-    if isnan(t) || t < 0 || t > 1
-        while isnan(t) || t < 0 || t > 1
-            t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
-        end
+    while isnan(t) || t < 0 || t > 1
+        t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
     end
 end
 
 for m = 1:length(plot_types)
     switch plot_types{m} 
+        % Select multiple distinct file(s) at the same time, plotted separatly
         case '2D plot (single trial)'
             [contour_indexes,~] = listdlg(...
                                     'PromptString','Select which files for 2D plot (single trial).',...
@@ -91,20 +92,11 @@ for m = 1:length(plot_types)
                 
                 cd(parent_directory);
             end
+        % Selcet multiple distinct file at the same time, plotted together
         case '2D plot (all trials)'
             [contour_indexes,~] = listdlg('PromptString','Select which files for 2D plot together.','ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
-            all_data = {};
-            for c_idx = 1:length(target_contours)                
-                c_file = target_contours{c_idx};
-                save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
-                c_data = importdata(c_file);
-                all_data{c_idx} = c_data;
-            end
-            cd(figure_directory);
-            PlotAll2DToFile(all_data,t,config);
-            
-            cd(parent_directory);
+            PlotAll2File(target_contours, t, config)
             
         case '2D plot (averaged)' 
             [contour_indexes,~] = listdlg('PromptString','Select which files for 2D plot (averaged).','ListString',contour_file_names);
@@ -174,7 +166,34 @@ for m = 1:length(plot_types)
             cd(figure_directory);
             AlignedEMAPlot(all_data, EMA_ave, t, config);
             cd(parent_directory);
+        % Select two file from any file at any time, plotted together
+        case 'Diff'
+            [selected,~] = listdlg(...
+                                    'PromptString','Select the first file for comparison',...
+                                    'SelectionMode','single',...
+                                    'ListString',contour_file_names);
+            first_contour = contour_file_names(selected);
+            t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):'));
+            while isnan(t) || t < 0 || t > 1
+                t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
+            end
+            times = [t];
+
+
+            [selected,~] = listdlg(...
+                                    'PromptString','Select the second file for comparison',...
+                                    'SelectionMode','single',...
+                                    'ListString',contour_file_names);
+            second_contour = contour_file_names(selected);
+            t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):'));
+            while isnan(t) || t < 0 || t > 1
+                t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
+            end
+            times = [times, t];
+            contours = [first_contour, second_contour];
+            PlotAll2File(contours, times, config)
     end
+    cd(parent_directory)
 end
 
 
@@ -221,18 +240,41 @@ function [ave_contour,all_contours] = GetAverageContour(all_data,time,config)
     end
 end
 
-function PlotAll2DToFile(all_data,time,config)
-    xlims = config.xlims;
-    ylims = config.ylims;
-    
-    fig2d = Plot2DAll(all_data,time,config);
+%{
+INPUT:
+    contours: Cell array of contour names
+    times: Time for all the contours. Or a List of times over each contour
+    config
+%}
+function PlotAll2File(contours, times, config)
+    fig2d = figure('Visible','off','position',[0, 0, 500,500]);
+    len = length(contours);
+    if length(times) ~= len
+        if length(times) ~= 1
+            error("PlotAll2File: Contours and times length mismatch")
+        else
+            % When times is a single number
+            times = times * ones(1, len);
+        end
+    end
 
-    xlim(xlims);
-    ylim(ylims);
+    for i = 1:len
+        [cX, cY] = GetContour(importdata(contours{i}),times(i),config);
+        display = split(contours{i}, '_');
+        % e.g. ZAX Halrup 0.3
+        display = strjoin([display{1}, ' ', display{2} ,' ', string(times(i))])
+        plot(cX,cY, 'DisplayName', display);
+        hold on
+    end
+
+    xlim(config.xlims);
+    ylim(config.ylims);
+    legend('Interpreter', 'none')
     
+    cd("./fig");
     output_file_name = inputdlg('Save file as... (no extension)');
     saveas(fig2d,append(output_file_name,".png"));
-    cla;
+    % cla;
     close(fig2d);
 end
 
