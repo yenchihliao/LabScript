@@ -1,7 +1,4 @@
 % Script for producing plots based on DeepEdge output
-% 
-% By K. Shibata 
-% Version 2024-7-13
 
 clear;
 
@@ -42,7 +39,7 @@ if ~isfolder('fig')
 end
 figure_directory = fullfile(parent_directory,'fig');
 
-% Isolate contour files 
+% Isolate contour files
 contour_files = dir('*.mat');
 contour_file_names = {contour_files.name};
 
@@ -52,7 +49,7 @@ contour_file_names = {contour_files.name};
     '2D plot n points (single trial)', ...
     '2D plot n points (averaged)', ...
     '2D plot Animated (averaged)',
-%} 
+%}
 all_plot_types = {
     '2D plot (single trial)', ...
     '2D plot (all trials)', ...
@@ -75,21 +72,21 @@ if any(ismember({'2D plot (single trial)' '2D plot (all trials)' '2D plot (avera
 end
 
 for m = 1:length(plot_types)
-    switch plot_types{m} 
+    switch plot_types{m}
         % Select multiple distinct file(s) at the same time, plotted separatly
         case '2D plot (single trial)'
             [contour_indexes,~] = listdlg(...
                                     'PromptString','Select which files for 2D plot (single trial).',...
                                     'ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
-            for c_idx = 1:length(target_contours)                
+            for c_idx = 1:length(target_contours)
                 c_file = target_contours{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
-                
+
                 cd(figure_directory);
                 Plot2DToFile(c_data,save_file_name,t,config);
-                
+
                 cd(parent_directory);
             end
         % Selcet multiple distinct file at the same time, plotted together
@@ -97,12 +94,12 @@ for m = 1:length(plot_types)
             [contour_indexes,~] = listdlg('PromptString','Select which files for 2D plot together.','ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
             PlotAll2File(target_contours, t, config)
-            
-        case '2D plot (averaged)' 
+
+        case '2D plot (averaged)'
             [contour_indexes,~] = listdlg('PromptString','Select which files for 2D plot (averaged).','ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
             all_data = {};
-            for c_idx = 1:length(target_contours)                
+            for c_idx = 1:length(target_contours)
                 c_file = target_contours{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
@@ -116,11 +113,11 @@ for m = 1:length(plot_types)
         case '2D plot Animated (single trial)'
             [contour_indexes,~] = listdlg('PromptString','Select which files for 2D Animated (single trial).','ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
-            for c_idx = 1:length(target_contours)                
+            for c_idx = 1:length(target_contours)
                 c_file = target_contours{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
-                
+
                 cd(figure_directory);
                 Animate2DIndividual(c_data,save_file_name, config)
                 cd(parent_directory);
@@ -132,14 +129,14 @@ for m = 1:length(plot_types)
             [contour_indexes,~] = listdlg('PromptString','Select second set to average.','ListString',contour_file_names);
             target_contoursB = contour_file_names(contour_indexes);
             all_dataA = {}; all_data_B = {};
-            for c_idx = 1:length(target_contoursA)                
+            for c_idx = 1:length(target_contoursA)
                 c_file = target_contoursA{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
                 all_dataA{c_idx} = c_data;
             end
 
-            for c_idx = 1:length(target_contoursB)                
+            for c_idx = 1:length(target_contoursB)
                 c_file = target_contoursB{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
@@ -152,12 +149,12 @@ for m = 1:length(plot_types)
             [contour_indexes,~] = listdlg('PromptString','Select which files for EMA comparison (averaged).','ListString',contour_file_names);
             target_contours = contour_file_names(contour_indexes);
             all_data = {};
-            
+
             [fName,path] = uigetfile('*.mat',"Select EMA average file");
-            
+
             EMA_ave = importdata(fullfile(path,fName));
 
-            for c_idx = 1:length(target_contours)                
+            for c_idx = 1:length(target_contours)
                 c_file = target_contours{c_idx};
                 save_file_name = c_file(1:end-4); % default save file name is just the same as the TSV file name
                 c_data = importdata(c_file);
@@ -166,31 +163,38 @@ for m = 1:length(plot_types)
             cd(figure_directory);
             AlignedEMAPlot(all_data, EMA_ave, t, config);
             cd(parent_directory);
-        % Select two file from any file at any time, plotted together
+        % Select multiple file from any file at any time, plotted together
         case 'Diff'
-            [selected,~] = listdlg(...
-                                    'PromptString','Select the first file for comparison',...
-                                    'SelectionMode','single',...
-                                    'ListString',contour_file_names);
-            first_contour = contour_file_names(selected);
-            t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):'));
-            while isnan(t) || t < 0 || t > 1
-                t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
-            end
-            times = [t];
+            % To store user inputs
+            contours = {};
+            times = [];
 
-
-            [selected,~] = listdlg(...
-                                    'PromptString','Select the second file for comparison',...
-                                    'SelectionMode','single',...
-                                    'ListString',contour_file_names);
-            second_contour = contour_file_names(selected);
-            t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):'));
-            while isnan(t) || t < 0 || t > 1
-                t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
+            selected = '';
+            t = '0.5';
+            while true
+                name = sprintf('Selected %d files', length(contours));
+                [selected,~] = listdlg(...
+                                        'Name', name,...
+                                        'PromptString','Select a file or cancel',...
+                                        'SelectionMode','single',...
+                                        'ListString',[contour_file_names]);
+                % If user cancels, break the loop
+                if isempty(selected)
+                    break
+                end
+                contour = contour_file_names(selected);
+                contours = [contours, contour];
+                t = str2double(...
+                    inputdlg(...
+                        'Enter the desired time for the plots (0 ~ 1):'),...
+                        'Select time', 1,...
+                        {num2str(t)}... % Use the previous time as default
+                    );
+                while isnan(t) || t < 0 || t > 1
+                    t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
+                end
+                times = [times, t];
             end
-            times = [times, t];
-            contours = [first_contour, second_contour];
             PlotAll2File(contours, times, config)
     end
     cd(parent_directory)
@@ -210,14 +214,14 @@ function [contourX, contourY] = GetContour(data,time,config)
     end
     contourX = data(t_frame).XY(:,1)*mpp; % in mm
     contourY = data(t_frame).XY(:,2)*-1*mpp; % in mm (inverted because y scale is inverted)
-    
+
 end
 
 function [ave_contour,all_contours] = GetAverageContour(all_data,time,config)
     mpp = config.mpp;
 
     n_contours = length(all_data);
-    
+
     all_contours = [];
     for c_idx = 1:n_contours
         c_data = all_data{c_idx};
@@ -230,7 +234,7 @@ function [ave_contour,all_contours] = GetAverageContour(all_data,time,config)
         contourY = c_data(t_frame).XY(:,2)*-1*mpp; % in mm (inverted because y scale is inverted)
         all_contours = [all_contours contourX contourY];
     end
-    
+
     ave_contour = [];
     for r_idx = 1:length(all_contours)
         row = all_contours(r_idx,:);
@@ -270,7 +274,7 @@ function PlotAll2File(contours, times, config)
     xlim(config.xlims);
     ylim(config.ylims);
     legend('Interpreter', 'none')
-    
+
     cd("./fig");
     output_file_name = inputdlg('Save file as... (no extension)');
     saveas(fig2d,append(output_file_name,".png"));
@@ -284,7 +288,7 @@ function PlotAverageContour(all_data,time,config)
 
     [ave_contour, all_contours] = GetAverageContour(all_data,time,config);
     fig2d = figure('Visible','off','position',[0, 0, 500,500]);
-    
+
     % plot average
     avex = ave_contour(:,1);
     avey = ave_contour(:,2);
@@ -300,7 +304,7 @@ function PlotAverageContour(all_data,time,config)
         c_y = all_contours(:,2+(c_idx-1)*2);
         plot(c_x,c_y,'Color',[0,0,1,0.3]);
     end
-    
+
     output_file_name = inputdlg('Save file as... (no extension)');
     saveas(fig2d,append(output_file_name,".png"));
     cla;
@@ -314,7 +318,7 @@ function PlotAverageContoursComparison(all_dataA,all_dataB,time,config)
     [ave_contourA, all_contoursA] = GetAverageContour(all_dataA,time,config);
     [ave_contourB, all_contoursB] = GetAverageContour(all_dataB,time,config);
     fig2d = figure('Visible','off','position',[0, 0, 500,500]);
-    
+
     % set 1
     % plot average
     avex = ave_contourA(:,1);
@@ -344,7 +348,7 @@ function PlotAverageContoursComparison(all_dataA,all_dataB,time,config)
         c_y = all_contoursB(:,2+(c_idx-1)*2);
         plot(c_x,c_y,'Color',[1,0,0,0.3]);
     end
-    
+
     output_file_name = inputdlg('Save file as... (no extension)');
     saveas(fig2d,append(output_file_name,".png"));
     cla;
@@ -366,19 +370,19 @@ function fig2d = Plot2DIndividual(data,time,config)
     ylims = config.ylims;
 
     [cX, cY] = GetContour(data,time,config);
-    
+
     fig2d = figure('Visible','off','position',[0, 0, 500,500]);
     plot(cX,cY);
     xlim(xlims);
     ylim(ylims);
     % xlabel('x-position (mm)');
     % ylabel('z-position (mm)');
-    
+
     % Remove coordinates
     ax = gca;
     ax.XTick = []; % Remove numerical x-ticks
     ax.YTick = []; % Remove numerical y-ticks
-    
+
     % Set axis with tongue indicator
     text(xlims(2), ylims(1), 'TT', 'HorizontalAlignment', 'center', 'VerticalAlignment', 'top');
     text(xlims(1), ylims(1), 'TD', 'HorizontalAlignment', 'left', 'VerticalAlignment', 'top');
@@ -390,11 +394,11 @@ function fig2d = Plot2DAll(all_data,time,config)
     xlims = config.xlims;
     ylims = config.ylims;
     fig2d = figure('Visible','off','position',[0, 0, 500,500]);
-    
+
     for i = 1:length(all_data)
         data = all_data{i};
         [cX, cY] = GetContour(data,time,config);
-    
+
         plot(cX,cY,'Color','b');
         hold on
     end
@@ -408,11 +412,11 @@ function Animate2DIndividual(data,file_name, config)
     frames = config.frames;
 
     gifFile = sprintf('%s_2D_animated.gif',file_name);
-    
+
     times = linspace(1/frames,1,frames);
 
     fprintf("Plotting %s...\n",gifFile);
-    
+
     for ct_idx = 1:frames
         if ct_idx == 1
             fprintf("Animating... Frame %d of %d",ct_idx,frames)
@@ -441,7 +445,7 @@ end
 function AlignedEMAPlot(all_data, EMA_ave, time, config)
     xlims = config.ema_xlims;
     ylims = config.ema_ylims;
-    
+
     [ave_contour,~] = GetAverageContour(all_data,time,config);
 
     TTx = EMA_ave.TT(1); TTz = EMA_ave.TT(3);
@@ -459,7 +463,7 @@ function AlignedEMAPlot(all_data, EMA_ave, time, config)
     TD_rel = [TDx-TBx TDz-TBz];
     TD_dist = sqrt(TD_rel(1)^2+TD_rel(2)^2);
     TD_angle = atan2(TD_rel(2),TD_rel(1));
-    
+
     TT_TD_angle_diff = TT_angle - TD_angle;
 
     error = 20;
@@ -473,15 +477,15 @@ function AlignedEMAPlot(all_data, EMA_ave, time, config)
             if temp_TT_dist > 5
                 continue
             end
-            
+
             temp_TT_angle = atan2(temp_TT_rel(2),temp_TT_rel(1));
             exp_TD_angle = temp_TT_angle + TT_TD_angle_diff;
 
             exp_TD = [temp_TB(1)+cos(exp_TD_angle)*TD_dist temp_TB(2)+sin(exp_TD_angle)*TD_dist];
-            
+
             for k = 1:i
                 temp_TD = ave_contour(k,:);
-                
+
                 temp_TD_dist = sqrt((temp_TD(1)-exp_TD(1))^2 + (temp_TD(2)-exp_TD(2))^2);
                 if temp_TD_dist > 10
                     continue
@@ -528,7 +532,7 @@ function adjusted_curve = AdjustCurve(curve,c_idx,offset,rotation)
     center_x = center(1);
     center_z = center(2);
     adjusted_curve = [];
-    
+
     offset_x = offset(1);
     offset_z = offset(2);
 
