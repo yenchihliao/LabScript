@@ -173,7 +173,7 @@ for m = 1:length(plot_types)
             t = '0.5';
             while true
                 name = sprintf('Selected %d files', length(contours));
-                [selected,~] = listdlg(...
+                [selected,~] = listdlg(
                                         'Name', name,...
                                         'PromptString','Select a file or cancel',...
                                         'SelectionMode','single',...
@@ -183,16 +183,8 @@ for m = 1:length(plot_types)
                     break
                 end
                 contour = contour_file_names(selected);
-                contours = [contours, contour];
-                t = str2double(...
-                    inputdlg(...
-                        'Enter the desired time for the plots (0 ~ 1):'),...
-                        'Select time', 1,...
-                        {num2str(t)}... % Use the previous time as default
-                    );
-                while isnan(t) || t < 0 || t > 1
-                    t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
-                end
+                contours{end+1} = contour{1};
+                t = validate_time_input(str2double(t));
                 times = [times, t];
             end
             PlotAll2File(contours, times, config)
@@ -245,6 +237,25 @@ function [ave_contour,all_contours] = GetAverageContour(all_data,time,config)
 end
 
 %{
+Helper function to validate time input
+INPUT:
+    default_t: Default time to be displayed in the input dialog
+OUTPUT:
+    t: Validated time input
+%}
+function t = validate_time_input(default_t)
+    if nargin < 1 || isempty(default_t)
+        default_t = 0.5;
+    end
+    t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):', ...
+                            'Select time', 1, {num2str(default_t)}));
+    while isnan(t) || t < 0 || t > 1
+        t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
+    end
+end
+
+%{
+Plots {contours} at {times} all in on plot
 INPUT:
     contours: Cell array of contour names
     times: Time for all the contours. Or a List of times over each contour
