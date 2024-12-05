@@ -184,8 +184,8 @@ for m = 1:length(plot_types)
                 end
                 contour = contour_file_names(selected);
                 contours{end+1} = contour{1};
-                t = validate_time_input(str2double(t));
-                times = [times, t];
+                t = validate_time_input(contour, str2double(t) * 100); % Use the last selected time as default
+                times(end+1) = t;
             end
             PlotAll2File(contours, times, config)
     end
@@ -239,19 +239,20 @@ end
 %{
 Helper function to validate time input
 INPUT:
+    prompt: Prompt to be displayed in the input dialog
     default_t: Default time to be displayed in the input dialog
 OUTPUT:
     t: Validated time input
 %}
-function t = validate_time_input(default_t)
-    if nargin < 1 || isempty(default_t)
-        default_t = 0.5;
+function t = validate_time_input(prompt, default_t)
+    prompt = sprintf('Time for %s in percentage: [0, 100]', prompt);
+    t = str2double(inputdlg(prompt, 'Select time', 1, {num2str(default_t)}));
+    while isnan(t) || t < 0 || t > 100
+        t = str2double(inputdlg(...
+            sprintf('Error, choose 0~100 - %s', prompt),
+            'Invalid input', 1, {num2str(default_t)}));
     end
-    t = str2double(inputdlg('Enter the desired time for the plots (0 ~ 1):', ...
-                            'Select time', 1, {num2str(default_t)}));
-    while isnan(t) || t < 0 || t > 1
-        t = str2double(inputdlg('Error - you must enter a number between 0.0 and 1.0. Try again:'));
-    end
+    t = t / 100;
 end
 
 %{
