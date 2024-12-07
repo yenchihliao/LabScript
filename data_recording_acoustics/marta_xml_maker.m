@@ -1,5 +1,4 @@
 clear;
-% K. Shibata 2024/5/1
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set to "true" if there are associated images for your stimuli
 use_images = false;
@@ -22,7 +21,7 @@ font_size = font_size{1};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 project_name = inputdlg('Enter the project name (one word):');
-while length(regexp(project_name{1},'^[a-zA-Z]+$')) ~= 1 
+while length(regexp(project_name{1},'^[a-zA-Z]+$')) ~= 1
     project_name = inputdlg('Please enter a valid project name (one word):');
 end
 project_name = project_name{1};
@@ -33,9 +32,12 @@ while length(regexp(speaker_name{1},'^[A-Z]{3}$')) ~= 1
 end
 speaker_name = speaker_name{1};
 
-experiment_date = inputdlg('Enter experiment date (8 numbers, YYYYMMDD format):');
-while length(regexp(experiment_date{1},'^[0-9]{8}$')) ~= 1
-    experiment_date = inputdlg('Please enter a valid experiment date (8 numbers, YYYYMMDD format):');
+% Prompt for the experiment date with today's date as the default
+experiment_date = inputdlg('Enter experiment date (8 numbers, YYYYMMDD format):', ...
+                           'Experiment Date', 1, {datestr(now, 'yyyymmdd')});
+while isempty(experiment_date) || length(regexp(experiment_date{1}, '^[0-9]{8}$')) ~= 1
+    experiment_date = inputdlg('Please enter a valid experiment date (8 numbers, YYYYMMDD format):', ...
+                               'Invalid Input', 1, {today_date});
 end
 experiment_date = experiment_date{1};
 
@@ -91,7 +93,7 @@ for i = 1:length(modules)
                 '       </MODULE>'...
             ];
         case "Audio"
-            
+
             chan_answer = questdlg(...
                             'Select channel number:', 'Channel Number',...
                             'mono', 'stero', 'mono') % mono by default
@@ -108,7 +110,7 @@ for i = 1:length(modules)
                                 'SelectionMode','single',...
                                 'InitialValue', [8],... % sampling_rates{8} by default
                                 'ListString',sampling_rates);
-            
+
             srate = sampling_rates(srate_index);
             srate = srate{1};
             info_text = [info_text;...
