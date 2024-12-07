@@ -170,10 +170,10 @@ for m = 1:length(plot_types)
             times = [];
 
             selected = '';
-            t = '0.5';
+            t = 0.5;
             while true
                 name = sprintf('Selected %d files', length(contours));
-                [selected,~] = listdlg(
+                [selected,~] = listdlg(...
                                         'Name', name,...
                                         'PromptString','Select a file or cancel',...
                                         'SelectionMode','single',...
@@ -184,7 +184,7 @@ for m = 1:length(plot_types)
                 end
                 contour = contour_file_names(selected);
                 contours{end+1} = contour{1};
-                t = validate_time_input(contour, str2double(t) * 100); % Use the last selected time as default
+                t = validate_time_input(contour{1}, t * 100); % Use the last selected time as default
                 times(end+1) = t;
             end
             PlotAll2File(contours, times, config)
@@ -198,7 +198,6 @@ end
 %%%%%
 function [contourX, contourY] = GetContour(data,time,config)
     mpp = config.mpp;
-
     n_frames = length(data);
     t_frame = round(time*n_frames);
     if t_frame == 0
@@ -249,7 +248,7 @@ function t = validate_time_input(prompt, default_t)
     t = str2double(inputdlg(prompt, 'Select time', 1, {num2str(default_t)}));
     while isnan(t) || t < 0 || t > 100
         t = str2double(inputdlg(...
-            sprintf('Error, choose 0~100 - %s', prompt),
+            sprintf('Error, choose 0~100 - %s', prompt),...
             'Invalid input', 1, {num2str(default_t)}));
     end
     t = t / 100;
@@ -278,7 +277,7 @@ function PlotAll2File(contours, times, config)
         [cX, cY] = GetContour(importdata(contours{i}),times(i),config);
         display = split(contours{i}, '_');
         % e.g. ZAX Halrup 0.3
-        display = strjoin([display{1}, ' ', display{2} ,' ', string(times(i))])
+        display = strjoin([display{1}, display{2}, string(times(i)*100),'%'])
         plot(cX,cY, 'DisplayName', display);
         hold on
     end
