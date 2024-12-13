@@ -13,4 +13,7 @@ clear;
 
 [trials,info] = ParseExpFile(fullfile(path,fName));
 
+current_path = pwd;
+cd(path);
 marta(trials,info);
+cd(current_path);
