@@ -46,8 +46,8 @@ if isempty(k), info.PREFIX = info.SESSION; else, info.PREFIX = INFO(k).ATTRIBUTE
 
 k = find(strcmpi('LOG',nodes));
 if isempty(k), info.LOG = info.SESSION; else, info.LOG = INFO(k).ATTRIBUTES.VALUE; end
-[~,f,e] = fileparts(info.LOG);
-if isempty(e), info.LOG = fullfile(sprintf('%s.log',f)); end
+[p,f,e] = fileparts(info.LOG);
+if isempty(e), info.LOG = fullfile(p, sprintf('%s.log',f)); end
 
 k = find(strcmpi('TIMINGS',nodes));
 if ~isempty(k), info.TIMINGS = INFO(k).ATTRIBUTES.VALUE; end
@@ -62,8 +62,8 @@ if ~isempty(idx)
 end
 k = find(strcmpi('ACQHW',nodes));
 if isempty(k)
-	info.ACQHW = []; 
-else 
+	info.ACQHW = [];
+else
 	ACQHW = INFO(k).CHILDREN;
 	idx = find(strcmpi('MODULE',{ACQHW.NAME}));
 	if isempty(idx)
@@ -111,18 +111,18 @@ if ~isempty(DEFS)
 		for ai = 1 : length(attr)
 			switch upper(attr(ai).NAME)
 				case {'CODE','NAME'}, blocks(bi).(upper(attr(ai).NAME)) = attr(ai).VALUE;
-				otherwise, blocks(bi).(upper(attr(ai).NAME)) = str2double(attr(ai).VALUE); 
+				otherwise, blocks(bi).(upper(attr(ai).NAME)) = str2double(attr(ai).VALUE);
 			end
 		end
 		if isempty(blocks(bi).CODE), blocks(bi).CODE = blocks(bi).NAME; end
 		temps = DB(bi).CHILDREN(find(strcmpi('TEMPLATE',{DB(bi).CHILDREN.NAME})));
 		tokens = DB(bi).CHILDREN(find(strcmpi('TOKEN',{DB(bi).CHILDREN.NAME})));
-		
+
 % expand tokens
 		for ti = 1 : length(tokens)
 			tid = 1;	% default
 			dur = [];	% unspecified
-			args = {tokens(ti).CHILDREN.CONTENT};% a0 %originally >1 leading to no space betwn words, changed to >2 by Fangchi 20241125	
+			args = {tokens(ti).CHILDREN.CONTENT};% a0 %originally >1 leading to no space betwn words, changed to >2 by Fangchi 20241125
 			if length(regexp(args{1},'\s','split')) > 2, error('illegal whitespace in token %d block %d content (a0)', ti, bi); end
 			for xi = 1 : length(tokens(ti).ATTRIBUTES)
 				switch upper(tokens(ti).ATTRIBUTES(xi).NAME)
@@ -139,7 +139,7 @@ if ~isempty(DEFS)
 			stim = [];
 			for si = 1 : length(s)
 				sa = MapAttributes(s(si));
-				delay = 0; 
+				delay = 0;
 				part = [];		% display to both partners if relevant
 				if ~isempty(sa)
 					if isfield(sa,'DELAY')
@@ -164,7 +164,7 @@ if ~isempty(DEFS)
 				end
 				handler = [];
 				k = find(strcmpi('HANDLER',{s(si).CHILDREN.NAME}));
-				if ~isempty(k) 
+				if ~isempty(k)
 					a = MapAttributes(s(si).CHILDREN(k));
 					arg = a.ARG;
 					for ai = 1 : length(args)	% substitute argument placeholders
@@ -232,8 +232,8 @@ for ni = 1 : length(nn)
 				if isempty(k), error('explicit TRIAL missing STIMULUS HTML'); end
 				HTML = ss(si).CHILDREN(k).CHILDREN.CONTENT;
 				k = find(strcmpi('HANDLER',{ss(si).CHILDREN.NAME}),1);
-				if isempty(k) 
-					extra = []; 
+				if isempty(k)
+					extra = [];
 				else
 					xa = MapAttributes(ss(si).CHILDREN(k));
 					extra = struct('HANDLER', struct('FUN',xa.FUNCTION,'ARG',xa.ARG));
@@ -279,7 +279,7 @@ for ri = 1 : b.NREPS
 	tt = t;
 	rn = sprintf('R%02d',ri);
 	for ti = 1 : length(t)
-		tt(ti).FNAME = replace(t(ti).FNAME,'RXX',rn); 
+		tt(ti).FNAME = replace(t(ti).FNAME,'RXX',rn);
 		for si = 1 : length(tt(ti).STIM)
 			if ~isscalar(tt(ti).STIM(si).DELAY)	% two element vector specifies range for randomized delay
 				tt(ti).STIM(si).DELAY = randi(tt(ti).STIM(si).DELAY,1);
@@ -307,7 +307,7 @@ nodeStruct = struct(                        ...
 				'CONTENT', '',                           ...
 				'CHILDREN', ParseChildNodes(theNode));
 if any(strcmp(methods(theNode), 'getData'))
-	nodeStruct.CONTENT = char(theNode.getData); 
+	nodeStruct.CONTENT = char(theNode.getData);
 else
 	nodeStruct.CONTENT = '';
 end
