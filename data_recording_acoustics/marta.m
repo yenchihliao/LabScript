@@ -328,8 +328,8 @@ function marta(varargin)
 				return
 			end
 		end
-		ls = repmat('=',1,60);
-		fprintf('\n\n%s\n  %s initiated %s\n', ls, info.SESSION, upper(char(datetime('now','format','ddMMMyy HH:mm:ss'))))
+		separator = repmat('=',1,60);
+		fprintf('\n\n%s\n  %s initiated %s\n', separator, info.SESSION, upper(char(datetime('now','format','ddMMMyy HH:mm:ss'))))
 		if record,
 			fprintf('%s\n',repmat('-',1,60))
 			InitLog(rmfield(info,'CSS'))
@@ -746,8 +746,8 @@ function marta(varargin)
 			fprintf('\n  Trial timings written to %s.mat\n', tName)
 		end
 
-		ls = repmat('=',1,60);
-		fprintf('\n%s\n  %s terminated %s\n%s\n', ls, state.INFO.SESSION, upper(char(datetime('now','format','ddMMMyy HH:mm:ss'))),ls)
+		separator = repmat('=',1,60);
+		fprintf('\n%s\n  %s terminated %s\n%s\n', separator, state.INFO.SESSION, upper(char(datetime('now','format','ddMMMyy HH:mm:ss'))),separator)
 		diary off		% stop logging
 
 		if exist(htmlFname,'file'), delete(htmlFname); end
